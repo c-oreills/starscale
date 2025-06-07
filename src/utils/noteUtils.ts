@@ -25,19 +25,11 @@ export const shiftNote = (currentNote: string, semitones: number): string => {
 }
 
 export const getTriadNotes = (baseNote: string, isMinor: boolean): string[] => {
-  const [noteName, octave] = splitNote(baseNote)
-  const baseIndex = NOTE_MAP.indexOf(noteName)
-  
   // Get third (4 semitones for major, 3 for minor)
-  const thirdInterval = isMinor ? 3 : 4
-  const thirdIndex = (baseIndex + thirdInterval) % 12
-  const thirdOctave = thirdIndex < baseIndex ? String(Number(octave) + 1) : octave
-  const third = NOTE_MAP[thirdIndex] + thirdOctave
-
+  const thirdInterval = isMinor ? 3 : 4;
+  const third = shiftNote(baseNote, thirdInterval);
   // Get perfect fifth (7 semitones up)
-  const fifthIndex = (baseIndex + 7) % 12
-  const fifthOctave = fifthIndex < baseIndex ? String(Number(octave) + 1) : octave
-  const fifth = NOTE_MAP[fifthIndex] + fifthOctave
+  const fifth = shiftNote(baseNote, 7);
 
-  return [baseNote, third, fifth, third, baseNote]
+  return [baseNote, third, fifth, third, baseNote];
 } 
