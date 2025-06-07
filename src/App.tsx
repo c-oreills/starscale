@@ -95,7 +95,7 @@ function App() {
       <div className="card">
         <div className="note-input">
           <div className="note-controls">
-            <button onClick={() => setNote(shiftNote(note, -1))}>
+            <button onClick={() => setNote(shiftNote(note, -1))} title="Lower base note by one semitone">
               ⬇️
             </button>
             <input
@@ -105,40 +105,41 @@ function App() {
               onChange={handleNoteChange}
               placeholder="Enter note (e.g. C4)"
             />
-            <button onClick={() => setNote(shiftNote(note, 1))}>
+            <button onClick={() => setNote(shiftNote(note, 1))} title="Raise base note by one semitone">
               ⬆️
             </button>
           </div>
         </div>
         <div className="button-group">
-          <button onClick={() => playPattern(false)}>
+          <button onClick={() => playPattern(false)} title="Play major triad pattern">
             🌝
           </button>
-          <button onClick={playBothPatterns}>
+          <button onClick={playBothPatterns} title="Play major then minor triad patterns">
             🌝🌚
           </button>
-          <button onClick={() => playPattern(true)}>
+          <button onClick={() => playPattern(true)} title="Play minor triad pattern">
             🌚
           </button>
         </div>
         <button 
           onClick={() => setShowNoteButtons(!showNoteButtons)}
           className="toggle-button"
+          title="Toggle individual note buttons"
         >
           {showNoteButtons ? '🎵' : '🎶'}
         </button>
         {showNoteButtons && (
           <div className="button-group">
-            <button onClick={() => playNote(note)} title="Root note">
+            <button onClick={() => playNote(note)} title="Play root note">
               1️⃣
             </button>
-            <button onClick={() => playNote(shiftNote(note, 4))} title="Major third">
+            <button onClick={() => playNote(shiftNote(note, 4))} title="Play major third">
               🌝3️⃣
             </button>
-            <button onClick={() => playNote(shiftNote(note, 3))} title="Minor third">
+            <button onClick={() => playNote(shiftNote(note, 3))} title="Play minor third">
               🌚3️⃣
             </button>
-            <button onClick={() => playNote(shiftNote(note, 7))} title="Perfect fifth">
+            <button onClick={() => playNote(shiftNote(note, 7))} title="Play perfect fifth">
               5️⃣
             </button>
           </div>
