@@ -10,6 +10,17 @@ function App() {
   const [showNoteButtons, setShowNoteButtons] = useState(false)
   const [isNoteError, setIsNoteError] = useState(false)
   const [pressTimer, setPressTimer] = useState<number | null>(null)
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+
+  // Detect touch device on first touch
+  useEffect(() => {
+    const handleTouch = () => {
+      setIsTouchDevice(true);
+      window.removeEventListener('touchstart', handleTouch);
+    };
+    window.addEventListener('touchstart', handleTouch);
+    return () => window.removeEventListener('touchstart', handleTouch);
+  }, []);
 
   const playNote = async (noteToPlay: string) => {
     if (sampler && isLoaded) {
@@ -135,9 +146,9 @@ function App() {
         <div className="note-input">
           <div className="note-controls">
             <button 
-              onMouseDown={() => startRepeatingShift(-1)}
-              onMouseUp={stopRepeatingShift}
-              onMouseLeave={stopRepeatingShift}
+              onMouseDown={() => !isTouchDevice && startRepeatingShift(-1)}
+              onMouseUp={() => !isTouchDevice && stopRepeatingShift()}
+              onMouseLeave={() => !isTouchDevice && stopRepeatingShift()}
               onTouchStart={() => startRepeatingShift(-1)}
               onTouchEnd={stopRepeatingShift}
               title="Lower base note by one semitone (hold for octave)"
@@ -155,9 +166,9 @@ function App() {
               title={isNoteError ? 'Invalid note format. Use format like C4, F#4, etc.' : ''}
             />
             <button 
-              onMouseDown={() => startRepeatingShift(1)}
-              onMouseUp={stopRepeatingShift}
-              onMouseLeave={stopRepeatingShift}
+              onMouseDown={() => !isTouchDevice && startRepeatingShift(1)}
+              onMouseUp={() => !isTouchDevice && stopRepeatingShift()}
+              onMouseLeave={() => !isTouchDevice && stopRepeatingShift()}
               onTouchStart={() => startRepeatingShift(1)}
               onTouchEnd={stopRepeatingShift}
               title="Raise base note by one semitone (hold for octave)"
