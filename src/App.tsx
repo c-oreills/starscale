@@ -8,6 +8,13 @@ function App() {
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
+  const playNote = async (noteToPlay: string) => {
+    if (sampler && isLoaded) {
+      await Tone.start()
+      sampler.triggerAttackRelease(noteToPlay, "4n")
+    }
+  }
+
   useEffect(() => {
     // Initialize piano sampler
     const newSampler = new Tone.Sampler({
@@ -110,6 +117,20 @@ function App() {
           </button>
           <button onClick={() => setNote(shiftNote(note, 1))}>
             ⬆️
+          </button>
+        </div>
+        <div className="button-group">
+          <button onClick={() => playNote(note)} title="Root note">
+            1️⃣
+          </button>
+          <button onClick={() => playNote(shiftNote(note, 4))} title="Major third">
+            🌝3️⃣
+          </button>
+          <button onClick={() => playNote(shiftNote(note, 3))} title="Minor third">
+            🌚3️⃣
+          </button>
+          <button onClick={() => playNote(shiftNote(note, 7))} title="Perfect fifth">
+            5️⃣
           </button>
         </div>
       </div>

@@ -88,6 +88,10 @@ label {
   margin-top: 1rem;
 }
 
+.button-group + .button-group {
+  margin-top: 0.75rem;
+}
+
 .loading {
   font-size: 1.2em;
   color: #666;
