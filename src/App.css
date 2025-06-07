@@ -112,6 +112,7 @@ h1 {
     0 4px 20px rgba(0, 0, 0, 0.3),
     0 0 30px rgba(107, 77, 197, 0.15) inset;
   border: 1px solid var(--border-color);
+  display: inline-block;
 }
 
 .note-input {
