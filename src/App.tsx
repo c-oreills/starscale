@@ -22,10 +22,19 @@ function App() {
     return () => window.removeEventListener('touchstart', handleTouch);
   }, []);
 
+  const ensureAudioContext = async () => {
+    if (!sampler || !isLoaded) return false
+    await Tone.start()
+    sampler.releaseAll()
+    // Cancel any existing scheduled events
+    Tone.Transport.cancel()
+    Tone.Transport.stop()
+    return true
+  }
+
   const playNote = async (noteToPlay: string) => {
-    if (sampler && isLoaded) {
-      await Tone.start()
-      sampler.triggerAttackRelease(noteToPlay, "4n")
+    if (await ensureAudioContext()) {
+      sampler!.triggerAttackRelease(noteToPlay, "4n")
     }
   }
 
@@ -55,37 +64,46 @@ function App() {
   }, [])
 
   const playPattern = async (isMinor: boolean) => {
-    if (sampler && isLoaded) {
-      await Tone.start()
-      
+    if (await ensureAudioContext()) {
       const notes = getTriadNotes(note, isMinor)
-      const now = Tone.now()
       
-      notes.forEach((n, i) => {
-        sampler.triggerAttackRelease(n, "4n", now + i * 0.5)
-      })
+      // Schedule notes using Transport instead of absolute time
+      Tone.Transport.scheduleOnce(() => {
+        notes.forEach((n, i) => {
+          Tone.Transport.scheduleOnce(() => {
+            sampler!.triggerAttackRelease(n, "4n")
+          }, `+${i * 0.5}`)
+        })
+      }, "+0.01")
+      
+      Tone.Transport.start()
     }
   }
 
   const playBothPatterns = async () => {
-    if (sampler && isLoaded) {
-      await Tone.start()
-      
+    if (await ensureAudioContext()) {
       const majorNotes = getTriadNotes(note, false)
       const minorNotes = getTriadNotes(note, true)
-      const now = Tone.now()
       
-      // Play major pattern
-      majorNotes.forEach((n, i) => {
-        sampler.triggerAttackRelease(n, "4n", now + i * 0.5)
-      })
+      // Schedule both patterns using Transport
+      Tone.Transport.scheduleOnce(() => {
+        // Play major pattern
+        majorNotes.forEach((n, i) => {
+          Tone.Transport.scheduleOnce(() => {
+            sampler!.triggerAttackRelease(n, "4n")
+          }, `+${i * 0.5}`)
+        })
+        
+        // Play minor pattern after delay
+        const delayBetweenPatterns = 0.5
+        minorNotes.forEach((n, i) => {
+          Tone.Transport.scheduleOnce(() => {
+            sampler!.triggerAttackRelease(n, "4n")
+          }, `+${(i + 5) * 0.5 + delayBetweenPatterns}`)
+        })
+      }, "+0.01")
       
-      const delayBetweenPatterns = 0.5 
-      
-      // Play minor pattern after major pattern finishes + delay
-      minorNotes.forEach((n, i) => {
-        sampler.triggerAttackRelease(n, "4n", now + (i + 5) * 0.5 + delayBetweenPatterns)
-      })
+      Tone.Transport.start()
     }
   }
 
