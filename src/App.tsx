@@ -4,21 +4,37 @@ import './App.css'
 
 function App() {
   const [note, setNote] = useState('C4')
-  const [synth, setSynth] = useState<Tone.Synth | null>(null)
+  const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    // Initialize synth
-    const newSynth = new Tone.Synth().toDestination()
-    setSynth(newSynth)
+    // Initialize piano sampler
+    const newSampler = new Tone.Sampler({
+      urls: {
+        C4: "C4.mp3",
+        "D#4": "Ds4.mp3",
+        "F#4": "Fs4.mp3",
+        A4: "A4.mp3",
+      },
+      release: 1,
+      baseUrl: "https://tonejs.github.io/audio/salamander/",
+      onload: () => {
+        setIsLoaded(true)
+      }
+    }).toDestination()
+
+    setSampler(newSampler)
 
     return () => {
-      newSynth.dispose()
+      newSampler.dispose()
     }
   }, [])
 
-  const playNote = () => {
-    if (synth) {
-      synth.triggerAttackRelease(note, "8n")
+  const playNote = async () => {
+    if (sampler && isLoaded) {
+      // Ensure audio context is started (needed for browsers)
+      await Tone.start()
+      sampler.triggerAttackRelease(note, "2n")
     }
   }
 
@@ -40,8 +56,11 @@ function App() {
             placeholder="Enter note (e.g. C4)"
           />
         </div>
-        <button onClick={playNote}>
-          Play {note}
+        <button 
+          onClick={playNote}
+          disabled={!isLoaded}
+        >
+          {isLoaded ? `Play ${note}` : 'Loading piano...'}
         </button>
       </div>
     </div>
