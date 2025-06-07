@@ -94,19 +94,23 @@ function App() {
       <h1>⭐️ StarScale</h1>
       <div className="card">
         <div className="note-input">
-          <label htmlFor="note">Note</label>
-          <input
-            type="text"
-            id="note"
-            value={note}
-            onChange={handleNoteChange}
-            placeholder="Enter note (e.g. C4)"
-          />
+          <div className="note-controls">
+            <button onClick={() => setNote(shiftNote(note, -1))}>
+              ⬇️
+            </button>
+            <input
+              type="text"
+              id="note"
+              value={note}
+              onChange={handleNoteChange}
+              placeholder="Enter note (e.g. C4)"
+            />
+            <button onClick={() => setNote(shiftNote(note, 1))}>
+              ⬆️
+            </button>
+          </div>
         </div>
         <div className="button-group">
-          <button onClick={() => setNote(shiftNote(note, -1))}>
-            ⬇️
-          </button>
           <button onClick={() => playPattern(false)}>
             🌝
           </button>
@@ -115,9 +119,6 @@ function App() {
           </button>
           <button onClick={() => playPattern(true)}>
             🌚
-          </button>
-          <button onClick={() => setNote(shiftNote(note, 1))}>
-            ⬆️
           </button>
         </div>
         <button 
