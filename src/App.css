@@ -80,3 +80,10 @@ label {
 .read-the-docs {
   color: #888;
 }
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}

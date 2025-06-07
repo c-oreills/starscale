@@ -26,6 +26,25 @@ function App() {
     return [baseNote, third, fifth, third, baseNote]
   }
 
+  // Helper function to get minor third and fifth
+  const getMinorTriadNotes = (baseNote: string) => {
+    const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    const [noteName, octave] = baseNote.split(/(\d+)/)
+    const baseIndex = noteMap.indexOf(noteName)
+    
+    // Get minor third (3 semitones up)
+    const thirdIndex = (baseIndex + 3) % 12
+    const thirdOctave = thirdIndex < baseIndex ? String(Number(octave) + 1) : octave
+    const third = noteMap[thirdIndex] + thirdOctave
+
+    // Get perfect fifth (7 semitones up)
+    const fifthIndex = (baseIndex + 7) % 12
+    const fifthOctave = fifthIndex < baseIndex ? String(Number(octave) + 1) : octave
+    const fifth = noteMap[fifthIndex] + fifthOctave
+
+    return [baseNote, third, fifth, third, baseNote]
+  }
+
   useEffect(() => {
     // Initialize piano sampler
     const newSampler = new Tone.Sampler({
@@ -49,14 +68,13 @@ function App() {
     }
   }, [])
 
-  const playNote = async () => {
+  const playPattern = async (isMinor: boolean) => {
     if (sampler && isLoaded) {
       await Tone.start()
       
-      const notes = getMajorTriadNotes(note)
+      const notes = isMinor ? getMinorTriadNotes(note) : getMajorTriadNotes(note)
       const now = Tone.now()
       
-      // Play each note in sequence with 0.25s spacing
       notes.forEach((n, i) => {
         sampler.triggerAttackRelease(n, "4n", now + i * 0.5)
       })
@@ -81,12 +99,20 @@ function App() {
             placeholder="Enter note (e.g. C4)"
           />
         </div>
-        <button 
-          onClick={playNote}
-          disabled={!isLoaded}
-        >
-          {isLoaded ? `Major` : 'Loading piano...'}
-        </button>
+        <div className="button-group">
+          <button 
+            onClick={() => playPattern(false)}
+            disabled={!isLoaded}
+          >
+            {isLoaded ? 'Major' : 'Loading piano...'}
+          </button>
+          <button 
+            onClick={() => playPattern(true)}
+            disabled={!isLoaded}
+          >
+            {isLoaded ? 'Minor' : 'Loading piano...'}
+          </button>
+        </div>
       </div>
     </div>
   )
