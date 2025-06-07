@@ -70,6 +70,17 @@ function App() {
     setNote(event.target.value)
   }
 
+  if (!isLoaded) {
+    return (
+      <div className="App">
+        <h1>⭐️ StarScale</h1>
+        <div className="card">
+          <div className="loading">Loading piano samples... 🎹</div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="App">
       <h1>⭐️ StarScale</h1>
@@ -85,35 +96,20 @@ function App() {
           />
         </div>
         <div className="button-group">
-          <button 
-            onClick={() => setNote(shiftNote(note, -1))}
-            disabled={!isLoaded}
-          >
-            {isLoaded ? '⬇️' : 'Loading piano...'}
+          <button onClick={() => setNote(shiftNote(note, -1))}>
+            ⬇️
           </button>
-          <button 
-            onClick={() => playPattern(false)}
-            disabled={!isLoaded}
-          >
-            {isLoaded ? '🌝' : 'Loading piano...'}
+          <button onClick={() => playPattern(false)}>
+            🌝
           </button>
-          <button 
-            onClick={playBothPatterns}
-            disabled={!isLoaded}
-          >
-            {isLoaded ? '🌝🌚' : 'Loading piano...'}
+          <button onClick={playBothPatterns}>
+            🌝🌚
           </button>
-          <button 
-            onClick={() => playPattern(true)}
-            disabled={!isLoaded}
-          >
-            {isLoaded ? '🌚' : 'Loading piano...'}
+          <button onClick={() => playPattern(true)}>
+            🌚
           </button>
-          <button 
-            onClick={() => setNote(shiftNote(note, 1))}
-            disabled={!isLoaded}
-          >
-            {isLoaded ? '⬆️' : 'Loading piano...'}
+          <button onClick={() => setNote(shiftNote(note, 1))}>
+            ⬆️
           </button>
         </div>
       </div>

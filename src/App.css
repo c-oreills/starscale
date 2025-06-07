@@ -87,3 +87,10 @@ label {
   justify-content: center;
   margin-top: 1rem;
 }
+
+.loading {
+  font-size: 1.2em;
+  color: #666;
+  padding: 2em;
+  text-align: center;
+}
