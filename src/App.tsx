@@ -9,6 +9,7 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [showNoteButtons, setShowNoteButtons] = useState(false)
   const [isNoteError, setIsNoteError] = useState(false)
+  const [pressTimer, setPressTimer] = useState<number | null>(null)
 
   const playNote = async (noteToPlay: string) => {
     if (sampler && isLoaded) {
@@ -75,6 +76,32 @@ function App() {
     }
   }
 
+  const startRepeatingShift = (semitones: number) => {
+    // Initial immediate shift
+    setNote(shiftNote(note, semitones))
+    
+    // Start repeating shifts after 500ms delay
+    const timer = setTimeout(() => {
+      let isFirstTick = true;  // This will be captured in the interval's closure
+      const repeatTimer = setInterval(() => {
+        // If first tick, shift 11 semitones since we want to retain the original note
+        const octaveShiftAmount = semitones * (isFirstTick ? 11 : 12);
+        setNote((prevNote) => shiftNote(prevNote, octaveShiftAmount));
+        isFirstTick = false;
+      }, 200) // Then shift every 200ms while held
+      setPressTimer(repeatTimer)
+    }, 500)
+    
+    setPressTimer(timer)
+  }
+
+  const stopRepeatingShift = () => {
+    if (pressTimer) {
+      clearInterval(pressTimer)
+      setPressTimer(null)
+    }
+  }
+
   const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNote( event.target.value)
     setIsNoteError(false)
@@ -107,7 +134,14 @@ function App() {
       <div className="card">
         <div className="note-input">
           <div className="note-controls">
-            <button onClick={() => setNote(shiftNote(note, -1))} title="Lower base note by one semitone">
+            <button 
+              onMouseDown={() => startRepeatingShift(-1)}
+              onMouseUp={stopRepeatingShift}
+              onMouseLeave={stopRepeatingShift}
+              onTouchStart={() => startRepeatingShift(-1)}
+              onTouchEnd={stopRepeatingShift}
+              title="Lower base note by one semitone (hold for octave)"
+            >
               ⬇️
             </button>
             <input
@@ -120,7 +154,14 @@ function App() {
               className={isNoteError ? 'error' : ''}
               title={isNoteError ? 'Invalid note format. Use format like C4, F#4, etc.' : ''}
             />
-            <button onClick={() => setNote(shiftNote(note, 1))} title="Raise base note by one semitone">
+            <button 
+              onMouseDown={() => startRepeatingShift(1)}
+              onMouseUp={stopRepeatingShift}
+              onMouseLeave={stopRepeatingShift}
+              onTouchStart={() => startRepeatingShift(1)}
+              onTouchEnd={stopRepeatingShift}
+              title="Raise base note by one semitone (hold for octave)"
+            >
               ⬆️
             </button>
           </div>
