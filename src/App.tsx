@@ -113,7 +113,6 @@ function App() {
         sampler.triggerAttackRelease(n, "4n", now + i * 0.5)
       })
       
-      // Add a 1 second delay between patterns
       const delayBetweenPatterns = 0.5 
       
       // Play minor pattern after major pattern finishes + delay
