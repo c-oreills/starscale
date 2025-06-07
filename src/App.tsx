@@ -33,10 +33,12 @@ function App() {
     // Initialize piano sampler
     const newSampler = new Tone.Sampler({
       urls: {
+        C3: "C3.mp3",
+        "F#3": "Fs3.mp3",
         C4: "C4.mp3",
-        "D#4": "Ds4.mp3",
         "F#4": "Fs4.mp3",
-        A4: "A4.mp3",
+        C5: "C5.mp3",
+        "F#5": "Fs5.mp3",
       },
       release: 1,
       baseUrl: "https://tonejs.github.io/audio/salamander/",
