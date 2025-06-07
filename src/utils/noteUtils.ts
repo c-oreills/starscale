@@ -10,16 +10,12 @@ export const shiftNote = (currentNote: string, semitones: number): string => {
   let currentIndex = NOTE_MAP.indexOf(noteName)
   let currentOctave = parseInt(octave)
 
-  currentIndex += semitones
-  
-  // Handle octave changes
-  if (currentIndex >= NOTE_MAP.length) {
-    currentIndex = currentIndex % NOTE_MAP.length
-    currentOctave++
-  } else if (currentIndex < 0) {
-    currentIndex = NOTE_MAP.length + (currentIndex % NOTE_MAP.length)
-    currentOctave--
-  }
+  // Calculate octave shifts first
+  const octaveShift = Math.floor((currentIndex + semitones) / NOTE_MAP.length)
+  currentOctave += octaveShift
+
+  // Then handle the note index wrapping
+  currentIndex = ((currentIndex + semitones) % NOTE_MAP.length + NOTE_MAP.length) % NOTE_MAP.length
 
   return `${NOTE_MAP[currentIndex]}${currentOctave}`
 }
