@@ -127,19 +127,19 @@ function App() {
             onClick={() => playPattern(false)}
             disabled={!isLoaded}
           >
-            {isLoaded ? 'Major' : 'Loading piano...'}
+            {isLoaded ? '🌝' : 'Loading piano...'}
           </button>
           <button 
             onClick={playBothPatterns}
             disabled={!isLoaded}
           >
-            {isLoaded ? 'Both' : 'Loading piano...'}
+            {isLoaded ? '🌝🌚' : 'Loading piano...'}
           </button>
           <button 
             onClick={() => playPattern(true)}
             disabled={!isLoaded}
           >
-            {isLoaded ? 'Minor' : 'Loading piano...'}
+            {isLoaded ? '🌚' : 'Loading piano...'}
           </button>
         </div>
       </div>
