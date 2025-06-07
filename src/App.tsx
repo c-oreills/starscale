@@ -1,68 +1,12 @@
 import { useState, useEffect } from 'react'
 import * as Tone from 'tone'
+import { shiftNote, getTriadNotes } from './utils/noteUtils'
 import './App.css'
 
 function App() {
   const [note, setNote] = useState('C4')
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
-
-  const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-
-  const shiftNote = (currentNote: string, semitones: number) => {
-    const [noteName, octave] = currentNote.split(/(\d+)/)
-    let currentIndex = noteMap.indexOf(noteName)
-    let currentOctave = parseInt(octave)
-
-    currentIndex += semitones
-    
-    // Handle octave changes
-    if (currentIndex >= noteMap.length) {
-      currentIndex = currentIndex % noteMap.length
-      currentOctave++
-    } else if (currentIndex < 0) {
-      currentIndex = noteMap.length + (currentIndex % noteMap.length)
-      currentOctave--
-    }
-
-    return `${noteMap[currentIndex]}${currentOctave}`
-  }
-
-  // Helper function to get major third and fifth
-  const getMajorTriadNotes = (baseNote: string) => {
-    const [noteName, octave] = baseNote.split(/(\d+)/)
-    const baseIndex = noteMap.indexOf(noteName)
-    
-    // Get major third (4 semitones up)
-    const thirdIndex = (baseIndex + 4) % 12
-    const thirdOctave = thirdIndex < baseIndex ? String(Number(octave) + 1) : octave
-    const third = noteMap[thirdIndex] + thirdOctave
-
-    // Get perfect fifth (7 semitones up)
-    const fifthIndex = (baseIndex + 7) % 12
-    const fifthOctave = fifthIndex < baseIndex ? String(Number(octave) + 1) : octave
-    const fifth = noteMap[fifthIndex] + fifthOctave
-
-    return [baseNote, third, fifth, third, baseNote]
-  }
-
-  // Helper function to get minor third and fifth
-  const getMinorTriadNotes = (baseNote: string) => {
-    const [noteName, octave] = baseNote.split(/(\d+)/)
-    const baseIndex = noteMap.indexOf(noteName)
-    
-    // Get minor third (3 semitones up)
-    const thirdIndex = (baseIndex + 3) % 12
-    const thirdOctave = thirdIndex < baseIndex ? String(Number(octave) + 1) : octave
-    const third = noteMap[thirdIndex] + thirdOctave
-
-    // Get perfect fifth (7 semitones up)
-    const fifthIndex = (baseIndex + 7) % 12
-    const fifthOctave = fifthIndex < baseIndex ? String(Number(octave) + 1) : octave
-    const fifth = noteMap[fifthIndex] + fifthOctave
-
-    return [baseNote, third, fifth, third, baseNote]
-  }
 
   useEffect(() => {
     // Initialize piano sampler
@@ -91,7 +35,7 @@ function App() {
     if (sampler && isLoaded) {
       await Tone.start()
       
-      const notes = isMinor ? getMinorTriadNotes(note) : getMajorTriadNotes(note)
+      const notes = getTriadNotes(note, isMinor)
       const now = Tone.now()
       
       notes.forEach((n, i) => {
@@ -104,8 +48,8 @@ function App() {
     if (sampler && isLoaded) {
       await Tone.start()
       
-      const majorNotes = getMajorTriadNotes(note)
-      const minorNotes = getMinorTriadNotes(note)
+      const majorNotes = getTriadNotes(note, false)
+      const minorNotes = getTriadNotes(note, true)
       const now = Tone.now()
       
       // Play major pattern
