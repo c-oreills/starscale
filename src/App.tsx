@@ -7,9 +7,29 @@ function App() {
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
+  const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+  const shiftNote = (currentNote: string, semitones: number) => {
+    const [noteName, octave] = currentNote.split(/(\d+)/)
+    let currentIndex = noteMap.indexOf(noteName)
+    let currentOctave = parseInt(octave)
+
+    currentIndex += semitones
+    
+    // Handle octave changes
+    if (currentIndex >= noteMap.length) {
+      currentIndex = currentIndex % noteMap.length
+      currentOctave++
+    } else if (currentIndex < 0) {
+      currentIndex = noteMap.length + (currentIndex % noteMap.length)
+      currentOctave--
+    }
+
+    return `${noteMap[currentIndex]}${currentOctave}`
+  }
+
   // Helper function to get major third and fifth
   const getMajorTriadNotes = (baseNote: string) => {
-    const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
     const [noteName, octave] = baseNote.split(/(\d+)/)
     const baseIndex = noteMap.indexOf(noteName)
     
@@ -28,7 +48,6 @@ function App() {
 
   // Helper function to get minor third and fifth
   const getMinorTriadNotes = (baseNote: string) => {
-    const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
     const [noteName, octave] = baseNote.split(/(\d+)/)
     const baseIndex = noteMap.indexOf(noteName)
     
@@ -124,6 +143,12 @@ function App() {
         </div>
         <div className="button-group">
           <button 
+            onClick={() => setNote(shiftNote(note, -1))}
+            disabled={!isLoaded}
+          >
+            {isLoaded ? '⬇️' : 'Loading piano...'}
+          </button>
+          <button 
             onClick={() => playPattern(false)}
             disabled={!isLoaded}
           >
@@ -140,6 +165,12 @@ function App() {
             disabled={!isLoaded}
           >
             {isLoaded ? '🌚' : 'Loading piano...'}
+          </button>
+          <button 
+            onClick={() => setNote(shiftNote(note, 1))}
+            disabled={!isLoaded}
+          >
+            {isLoaded ? '⬆️' : 'Loading piano...'}
           </button>
         </div>
       </div>
