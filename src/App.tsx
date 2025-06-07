@@ -7,6 +7,25 @@ function App() {
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
+  // Helper function to get major third and fifth
+  const getMajorTriadNotes = (baseNote: string) => {
+    const noteMap = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    const [noteName, octave] = baseNote.split(/(\d+)/)
+    const baseIndex = noteMap.indexOf(noteName)
+    
+    // Get major third (4 semitones up)
+    const thirdIndex = (baseIndex + 4) % 12
+    const thirdOctave = thirdIndex < baseIndex ? String(Number(octave) + 1) : octave
+    const third = noteMap[thirdIndex] + thirdOctave
+
+    // Get perfect fifth (7 semitones up)
+    const fifthIndex = (baseIndex + 7) % 12
+    const fifthOctave = fifthIndex < baseIndex ? String(Number(octave) + 1) : octave
+    const fifth = noteMap[fifthIndex] + fifthOctave
+
+    return [baseNote, third, fifth, third, baseNote]
+  }
+
   useEffect(() => {
     // Initialize piano sampler
     const newSampler = new Tone.Sampler({
@@ -32,9 +51,15 @@ function App() {
 
   const playNote = async () => {
     if (sampler && isLoaded) {
-      // Ensure audio context is started (needed for browsers)
       await Tone.start()
-      sampler.triggerAttackRelease(note, "2n")
+      
+      const notes = getMajorTriadNotes(note)
+      const now = Tone.now()
+      
+      // Play each note in sequence with 0.25s spacing
+      notes.forEach((n, i) => {
+        sampler.triggerAttackRelease(n, "4n", now + i * 0.5)
+      })
     }
   }
 
@@ -60,7 +85,7 @@ function App() {
           onClick={playNote}
           disabled={!isLoaded}
         >
-          {isLoaded ? `Play ${note}` : 'Loading piano...'}
+          {isLoaded ? `Major` : 'Loading piano...'}
         </button>
       </div>
     </div>
