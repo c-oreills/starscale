@@ -8,6 +8,7 @@ function App() {
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [showNoteButtons, setShowNoteButtons] = useState(false)
+  const [isNoteError, setIsNoteError] = useState(false)
 
   const playNote = async (noteToPlay: string) => {
     if (sampler && isLoaded) {
@@ -75,7 +76,18 @@ function App() {
   }
 
   const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNote(event.target.value)
+    setNote( event.target.value)
+    setIsNoteError(false)
+  }
+
+  const handleNoteBlur = () => {
+    const upperValue = note.toUpperCase()
+    if (/^[A-G]#?\d+$/.test(upperValue)) {
+      setNote(upperValue)
+      setIsNoteError(false)
+    } else {
+      setIsNoteError(true)
+    }
   }
 
   if (!isLoaded) {
@@ -103,7 +115,10 @@ function App() {
               id="note"
               value={note}
               onChange={handleNoteChange}
+              onBlur={handleNoteBlur}
               placeholder="Enter note (e.g. C4)"
+              className={isNoteError ? 'error' : ''}
+              title={isNoteError ? 'Invalid note format. Use format like C4, F#4, etc.' : ''}
             />
             <button onClick={() => setNote(shiftNote(note, 1))} title="Raise base note by one semitone">
               ⬆️
@@ -150,3 +165,4 @@ function App() {
 }
 
 export default App
+
