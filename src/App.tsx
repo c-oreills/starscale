@@ -81,6 +81,29 @@ function App() {
     }
   }
 
+  const playBothPatterns = async () => {
+    if (sampler && isLoaded) {
+      await Tone.start()
+      
+      const majorNotes = getMajorTriadNotes(note)
+      const minorNotes = getMinorTriadNotes(note)
+      const now = Tone.now()
+      
+      // Play major pattern
+      majorNotes.forEach((n, i) => {
+        sampler.triggerAttackRelease(n, "4n", now + i * 0.5)
+      })
+      
+      // Add a 1 second delay between patterns
+      const delayBetweenPatterns = 0.5 
+      
+      // Play minor pattern after major pattern finishes + delay
+      minorNotes.forEach((n, i) => {
+        sampler.triggerAttackRelease(n, "4n", now + (i + 5) * 0.5 + delayBetweenPatterns)
+      })
+    }
+  }
+
   const handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNote(event.target.value)
   }
@@ -105,6 +128,12 @@ function App() {
             disabled={!isLoaded}
           >
             {isLoaded ? 'Major' : 'Loading piano...'}
+          </button>
+          <button 
+            onClick={playBothPatterns}
+            disabled={!isLoaded}
+          >
+            {isLoaded ? 'Both' : 'Loading piano...'}
           </button>
           <button 
             onClick={() => playPattern(true)}
