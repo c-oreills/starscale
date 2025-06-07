@@ -98,3 +98,17 @@ label {
   padding: 2em;
   text-align: center;
 }
+
+.toggle-button {
+  margin: 1rem auto 0;
+  padding: 0.4em 1em;
+  font-size: 1.2em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.toggle-button:hover {
+  transform: scale(1.1);
+}

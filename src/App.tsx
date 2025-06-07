@@ -7,6 +7,7 @@ function App() {
   const [note, setNote] = useState('C4')
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [showNoteButtons, setShowNoteButtons] = useState(false)
 
   const playNote = async (noteToPlay: string) => {
     if (sampler && isLoaded) {
@@ -119,20 +120,28 @@ function App() {
             ⬆️
           </button>
         </div>
-        <div className="button-group">
-          <button onClick={() => playNote(note)} title="Root note">
-            1️⃣
-          </button>
-          <button onClick={() => playNote(shiftNote(note, 4))} title="Major third">
-            🌝3️⃣
-          </button>
-          <button onClick={() => playNote(shiftNote(note, 3))} title="Minor third">
-            🌚3️⃣
-          </button>
-          <button onClick={() => playNote(shiftNote(note, 7))} title="Perfect fifth">
-            5️⃣
-          </button>
-        </div>
+        <button 
+          onClick={() => setShowNoteButtons(!showNoteButtons)}
+          className="toggle-button"
+        >
+          {showNoteButtons ? '🎵' : '🎶'}
+        </button>
+        {showNoteButtons && (
+          <div className="button-group">
+            <button onClick={() => playNote(note)} title="Root note">
+              1️⃣
+            </button>
+            <button onClick={() => playNote(shiftNote(note, 4))} title="Major third">
+              🌝3️⃣
+            </button>
+            <button onClick={() => playNote(shiftNote(note, 3))} title="Minor third">
+              🌚3️⃣
+            </button>
+            <button onClick={() => playNote(shiftNote(note, 7))} title="Perfect fifth">
+              5️⃣
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
