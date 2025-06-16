@@ -126,6 +126,34 @@ function App() {
     }
   }
 
+  const playScaleAscendingDescending = async () => {
+    if (await ensureAudioContext()) {
+      const scaleNotes = getScaleNotes(note, selectedScale)
+      const ascendingNotes = scaleNotes
+      const descendingNotes = [...scaleNotes].reverse().slice(1) // Remove the octave to avoid repeating it
+      
+      // Schedule ascending then descending notes using Transport
+      Tone.Transport.scheduleOnce(() => {
+        // Play ascending
+        ascendingNotes.forEach((n, i) => {
+          Tone.Transport.scheduleOnce(() => {
+            sampler!.triggerAttackRelease(n, "4n")
+          }, `+${i * 0.5}`)
+        })
+        
+        // Play descending after ascending finishes
+        const ascendingDuration = ascendingNotes.length * 0.5
+        descendingNotes.forEach((n, i) => {
+          Tone.Transport.scheduleOnce(() => {
+            sampler!.triggerAttackRelease(n, "4n")
+          }, `+${ascendingDuration + i * 0.5}`)
+        })
+      }, "+0.01")
+      
+      Tone.Transport.start()
+    }
+  }
+
   const startRepeatingShift = (semitones: number) => {
     // Initial immediate shift
     setNote(shiftNote(note, semitones))
@@ -240,6 +268,12 @@ function App() {
               title="Play scale ascending"
             >
               ⬆️🎵
+            </button>
+            <button
+              onClick={playScaleAscendingDescending}
+              title="Play scale ascending then descending"
+            >
+              ⬆️⬇️🎵
             </button>
             <button
               onClick={() => playScale(false)}
