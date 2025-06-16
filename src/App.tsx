@@ -3,9 +3,25 @@ import * as Tone from 'tone'
 import { shiftNote, getTriadNotes, getScaleNotes, SCALES, type ScaleId } from './utils/noteUtils'
 import './App.css'
 
+// Helper functions for URL query parameters
+const getScaleFromUrl = (): ScaleId => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const scaleParam = urlParams.get('scale')
+  if (scaleParam && scaleParam in SCALES) {
+    return scaleParam as ScaleId
+  }
+  return 'major-minor' // default
+}
+
+const updateUrlWithScale = (scale: ScaleId) => {
+  const url = new URL(window.location.href)
+  url.searchParams.set('scale', scale)
+  window.history.replaceState({}, '', url.toString())
+}
+
 function App() {
   const [note, setNote] = useState('C4')
-  const [selectedScale, setSelectedScale] = useState<ScaleId>('major-minor')
+  const [selectedScale, setSelectedScale] = useState<ScaleId>(getScaleFromUrl())
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [showNoteButtons, setShowNoteButtons] = useState(false)
@@ -211,11 +227,15 @@ function App() {
       <h1>⭐️ StarScale</h1>
       <div className="card">
         <div className="scale-selector">
-          <select
-            value={selectedScale}
-            onChange={(e) => setSelectedScale(e.target.value as ScaleId)}
-            title="Select musical scale"
-          >
+                      <select 
+              value={selectedScale} 
+              onChange={(e) => {
+                const newScale = e.target.value as ScaleId
+                setSelectedScale(newScale)
+                updateUrlWithScale(newScale)
+              }}
+              title="Select musical scale"
+            >
             {Object.entries(SCALES).map(([slug, scale]) => (
               <option key={slug} value={slug}>
                 {scale.name}
