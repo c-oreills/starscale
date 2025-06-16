@@ -331,7 +331,7 @@ function App() {
         >
           {showNoteButtons ? "🎵" : "🎶"}
         </button>
-        {showNoteButtons && (
+        {showNoteButtons && selectedScale === 'major-minor' && (
           <div className="button-group">
             <button onClick={() => playNote(note)} title="Play root note">
               1️⃣
@@ -355,6 +355,27 @@ function App() {
               5️⃣
             </button>
           </div>
+        )}
+        {showNoteButtons && selectedScale !== 'major-minor' && (
+          <>
+            {Array.from({ length: Math.ceil(getScaleNotes(note, selectedScale).length / 4) }, (_, groupIndex) => (
+              <div key={groupIndex} className="button-group">
+                {getScaleNotes(note, selectedScale)
+                  // Group into 4-note chunks
+                  .slice(groupIndex * 4, groupIndex * 4 + 4)
+                  .map((scaleNote, index) => (
+                    <button 
+                      key={`${scaleNote}-${groupIndex * 4 + index}`}
+                      onClick={() => playNote(scaleNote)} 
+                      title={`Play ${scaleNote}`}
+                    >
+                      {/* Remove the octave number from the note */}
+                      {scaleNote.replace(/\d+/g, '')}
+                    </button>
+                  ))}
+              </div>
+            ))}
+          </>
         )}
       </div>
     </div>
