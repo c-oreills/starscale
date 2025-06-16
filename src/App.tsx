@@ -267,19 +267,19 @@ function App() {
               onClick={() => playScale(true)}
               title="Play scale ascending"
             >
-              ⬆️🎵
+              🌔
             </button>
             <button
               onClick={playScaleAscendingDescending}
               title="Play scale ascending then descending"
             >
-              ⬆️⬇️🎵
+              🌔🌘
             </button>
             <button
               onClick={() => playScale(false)}
               title="Play scale descending"
             >
-              ⬇️🎵
+              🌘
             </button>
           </div>
         ) : (
