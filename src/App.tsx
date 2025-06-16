@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import * as Tone from 'tone'
-import { shiftNote, getTriadNotes } from './utils/noteUtils'
+import { shiftNote, getTriadNotes, getScaleNotes, SCALES, type ScaleId } from './utils/noteUtils'
 import './App.css'
 
 function App() {
   const [note, setNote] = useState('C4')
+  const [selectedScale, setSelectedScale] = useState<ScaleId>('major-minor')
   const [sampler, setSampler] = useState<Tone.Sampler | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
   const [showNoteButtons, setShowNoteButtons] = useState(false)
@@ -107,6 +108,24 @@ function App() {
     }
   }
 
+  const playScale = async (ascending: boolean = true) => {
+    if (await ensureAudioContext()) {
+      const scaleNotes = getScaleNotes(note, selectedScale)
+      const notesToPlay = ascending ? scaleNotes : [...scaleNotes].reverse()
+      
+      // Schedule scale notes using Transport
+      Tone.Transport.scheduleOnce(() => {
+        notesToPlay.forEach((n, i) => {
+          Tone.Transport.scheduleOnce(() => {
+            sampler!.triggerAttackRelease(n, "4n")
+          }, `+${i * 0.5}`)
+        })
+      }, "+0.01")
+      
+      Tone.Transport.start()
+    }
+  }
+
   const startRepeatingShift = (semitones: number) => {
     // Initial immediate shift
     setNote(shiftNote(note, semitones))
@@ -163,9 +182,22 @@ function App() {
     <div className="App">
       <h1>⭐️ StarScale</h1>
       <div className="card">
+        <div className="scale-selector">
+          <select
+            value={selectedScale}
+            onChange={(e) => setSelectedScale(e.target.value as ScaleId)}
+            title="Select musical scale"
+          >
+            {Object.entries(SCALES).map(([slug, scale]) => (
+              <option key={slug} value={slug}>
+                {scale.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="note-input">
           <div className="note-controls">
-            <button 
+            <button
               onMouseDown={() => !isTouchDevice && startRepeatingShift(-1)}
               onMouseUp={() => !isTouchDevice && stopRepeatingShift()}
               onMouseLeave={() => !isTouchDevice && stopRepeatingShift()}
@@ -182,10 +214,14 @@ function App() {
               onChange={handleNoteChange}
               onBlur={handleNoteBlur}
               placeholder="Enter note (e.g. C4)"
-              className={isNoteError ? 'error' : ''}
-              title={isNoteError ? 'Invalid note format. Use format like C4, F#4, etc.' : ''}
+              className={isNoteError ? "error" : ""}
+              title={
+                isNoteError
+                  ? "Invalid note format. Use format like C4, F#4, etc."
+                  : ""
+              }
             />
-            <button 
+            <button
               onMouseDown={() => !isTouchDevice && startRepeatingShift(1)}
               onMouseUp={() => !isTouchDevice && stopRepeatingShift()}
               onMouseLeave={() => !isTouchDevice && stopRepeatingShift()}
@@ -197,43 +233,78 @@ function App() {
             </button>
           </div>
         </div>
-        <div className="button-group">
-          <button onClick={() => playPattern(false)} title="Play major triad pattern">
-            🌝
-          </button>
-          <button onClick={playBothPatterns} title="Play major then minor triad patterns">
-            🌝🌚
-          </button>
-          <button onClick={() => playPattern(true)} title="Play minor triad pattern">
-            🌚
-          </button>
-        </div>
-        <button 
+        {selectedScale !== "major-minor" ? (
+          <div className="button-group">
+            <button
+              onClick={() => playScale(true)}
+              title="Play scale ascending"
+            >
+              ⬆️🎵
+            </button>
+            <button
+              onClick={() => playScale(false)}
+              title="Play scale descending"
+            >
+              ⬇️🎵
+            </button>
+          </div>
+        ) : (
+          <div className="button-group">
+            <button
+              onClick={() => playPattern(false)}
+              title="Play major triad pattern"
+            >
+              🌝
+            </button>
+            <button
+              onClick={playBothPatterns}
+              title="Play major then minor triad patterns"
+            >
+              🌝🌚
+            </button>
+            <button
+              onClick={() => playPattern(true)}
+              title="Play minor triad pattern"
+            >
+              🌚
+            </button>
+          </div>
+        )}
+        <button
           onClick={() => setShowNoteButtons(!showNoteButtons)}
           className="toggle-button"
           title="Toggle individual note buttons"
         >
-          {showNoteButtons ? '🎵' : '🎶'}
+          {showNoteButtons ? "🎵" : "🎶"}
         </button>
         {showNoteButtons && (
           <div className="button-group">
             <button onClick={() => playNote(note)} title="Play root note">
               1️⃣
             </button>
-            <button onClick={() => playNote(shiftNote(note, 4))} title="Play major third">
+            <button
+              onClick={() => playNote(shiftNote(note, 4))}
+              title="Play major third"
+            >
               🌝3️⃣
             </button>
-            <button onClick={() => playNote(shiftNote(note, 3))} title="Play minor third">
+            <button
+              onClick={() => playNote(shiftNote(note, 3))}
+              title="Play minor third"
+            >
               🌚3️⃣
             </button>
-            <button onClick={() => playNote(shiftNote(note, 7))} title="Play perfect fifth">
+            <button
+              onClick={() => playNote(shiftNote(note, 7))}
+              title="Play perfect fifth"
+            >
               5️⃣
             </button>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
 export default App

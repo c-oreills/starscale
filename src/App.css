@@ -204,3 +204,37 @@ button:hover {
   75% { transform: translateX(-4px); }
   100% { transform: translateX(0); }
 }
+
+.scale-selector {
+  margin-bottom: 1.5em;
+  display: flex;
+  justify-content: center;
+}
+
+.scale-selector select {
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.25s;
+  min-width: 150px;
+}
+
+.scale-selector select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px rgba(107, 77, 197, 0.2);
+}
+
+.scale-selector select:hover {
+  border-color: var(--accent-hover);
+}
+
+.scale-selector select option {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  padding: 0.5em;
+}
